@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { FC, ReactNode } from 'react';
 
-interface RootLayoutProps extends Readonly<{ children: ReactNode }> {}
+type RootLayoutProps = Readonly<{ children: ReactNode }>;
 
 export const metadata: Metadata = {
   title: 'Booking Helper',
