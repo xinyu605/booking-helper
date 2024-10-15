@@ -18,7 +18,10 @@ import IconButton from '@/components/IconButton';
 
 const iconSize = 32;
 
-interface CustomInputNumberProps
+const getIconColorKey = (disabled?: boolean) =>
+  disabled ? 'text-slate-400' : 'text-sky-600';
+
+export interface CustomInputNumberProps
   extends Pick<
     InputHTMLAttributes<HTMLInputElement>,
     'disabled' | 'name' | 'onChange'
@@ -40,18 +43,21 @@ const CustomInputNumber: FC<CustomInputNumberProps> = ({
   onBlur,
   onChange,
 }) => {
-  const iconColor = disabled ? 'text-slate-400' : 'text-sky-600';
-
   const [inputValue, setInputValue] = useState(value);
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const newValue = +event.target.value;
-      if (Number.isNaN(newValue)) return;
+      if (
+        Number.isNaN(newValue) ||
+        newValue < min ||
+        (max !== undefined && newValue > max)
+      )
+        return;
       setInputValue(newValue);
       onChange?.(event);
     },
-    [onChange]
+    [max, min, onChange]
   );
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -97,21 +103,29 @@ const CustomInputNumber: FC<CustomInputNumberProps> = ({
     setInputValue(value);
   }, [value]);
 
+  const disabledMinus = disabled || value <= min;
+  const disabledPlus = disabled || (max !== undefined && value >= max);
+  const disabledInput = disabledMinus && disabledPlus;
+
   return (
     <div className="p-2 flex gap-2">
       <IconButton
         aria-label="minus"
-        disabled={disabled}
+        disabled={disabledMinus}
         onBlur={onBlur}
         onMouseDown={handleMouseDown('minus')}
         onMouseLeave={clearInterval}
         onMouseUp={clearInterval}
       >
-        <MinusIcon width={iconSize} height={iconSize} className={iconColor} />
+        <MinusIcon
+          width={iconSize}
+          height={iconSize}
+          className={getIconColorKey(disabledMinus)}
+        />
       </IconButton>
       <input
         className="w-12 h-12 rounded-md border border-slate-300 text-center text-slate-700 disabled:text-slate-300"
-        disabled={disabled}
+        disabled={disabledInput}
         max={max}
         min={min}
         name={name}
@@ -123,13 +137,17 @@ const CustomInputNumber: FC<CustomInputNumberProps> = ({
       />
       <IconButton
         aria-label="plus"
-        disabled={disabled}
+        disabled={disabledPlus}
         onBlur={onBlur}
         onMouseDown={handleMouseDown('plus')}
         onMouseLeave={clearInterval}
         onMouseUp={clearInterval}
       >
-        <PlusIcon width={iconSize} height={iconSize} className={iconColor} />
+        <PlusIcon
+          width={iconSize}
+          height={iconSize}
+          className={getIconColorKey(disabledPlus)}
+        />
       </IconButton>
     </div>
   );

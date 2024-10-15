@@ -1,18 +1,4 @@
-interface Guest {
-  adult: number;
-  child: number;
-}
-
-interface Room {
-  roomPrice: number;
-  adultPrice: number;
-  childPrice: number;
-  capacity: number;
-}
-
-interface RoomAllocation extends Guest {
-  price: number;
-}
+import type { Guest, Room, RoomAllocation } from '@/lib/type';
 
 interface RoomCost {
   cost: number;
