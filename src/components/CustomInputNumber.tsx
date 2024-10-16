@@ -70,7 +70,7 @@ const CustomInputNumber: FC<CustomInputNumberProps> = ({
       return;
     }
 
-    timerRef.current = setInterval(() => {
+    const updateInputValue = () => {
       setInputValue((prev) => {
         if (type === 'plus') {
           const newValue = prev + step;
@@ -80,6 +80,13 @@ const CustomInputNumber: FC<CustomInputNumberProps> = ({
         const newValue = prev - step;
         return newValue <= min ? min : newValue;
       });
+    };
+
+    /** Update input value as soon as mouse down to make user interaction smoothly. */
+    updateInputValue();
+
+    timerRef.current = setInterval(() => {
+      updateInputValue();
     }, 100);
   };
 
