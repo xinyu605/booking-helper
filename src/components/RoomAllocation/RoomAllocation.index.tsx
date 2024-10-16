@@ -49,8 +49,14 @@ const RoomAllocation: FC<RoomAllocationProps> = ({
   return (
     <div className="p-4 flex justify-center">
       <div className="flex flex-col gap-6">
-        <h2 className="text-2xl text-slate-700 font-bold">{`住客人數：${adult} 位大人，${child} 位小孩 / ${rooms.length} 房`}</h2>
-        <div className="p-4 border border-sky-500 bg-sky-50 rounded-md">
+        <h2
+          className="text-2xl text-slate-700 font-bold"
+          aria-label="all guests"
+        >{`住客人數：${adult} 位大人，${child} 位小孩 / ${rooms.length} 房`}</h2>
+        <div
+          className="p-4 border border-sky-500 bg-sky-50 rounded-md"
+          aria-label="unallocated guests"
+        >
           <p className="text-slate-700">{`尚未分配人數：${availableGuest.adult} 位大人，${availableGuest.child} 位小孩`}</p>
         </div>
         <ul>
