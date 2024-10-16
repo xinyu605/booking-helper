@@ -11,6 +11,7 @@ const config: Config = {
   coverageProvider: 'v8',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    '^.+\\.(svg)$': '<rootDir>/src/tests/__mocks__/svgMock.tsx',
   },
   testEnvironment: './fixJSDOMEnvironment.ts',
   setupFilesAfterEnv: ['<rootDir>/src/tests/jest.setup.ts'],
