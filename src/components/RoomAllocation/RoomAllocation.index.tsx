@@ -13,19 +13,15 @@ export interface RoomAllocationProps {
 }
 
 const RoomAllocation: FC<RoomAllocationProps> = ({
-  guest,
+  guest: initialGuest,
   rooms,
   onChange,
 }) => {
-  const { adult, child } = guest;
+  const { adult, child } = initialGuest;
 
-  const [allocation, setAllocation] = useState<RoomAllocation[]>(() => {
-    const defaultRoomAllocation = getDefaultRoomAllocation(guest, rooms);
-    return Array.from(
-      { length: rooms.length },
-      (_, idx) => defaultRoomAllocation[idx] || { adult: 0, child: 0, price: 0 }
-    );
-  });
+  const [allocation, setAllocation] = useState<RoomAllocation[]>(() =>
+    getDefaultRoomAllocation(initialGuest, rooms)
+  );
 
   const availableGuest = useMemo(
     () =>
@@ -39,13 +35,15 @@ const RoomAllocation: FC<RoomAllocationProps> = ({
     [adult, allocation, child]
   );
 
-  const handleChange = (index: number) => (guest: Guest) => {
-    const newAllocation = allocation.toSpliced(index, 1, {
-      ...guest,
-      price: allocation[0].price,
+  const handleChange = (index: number) => (newGuest: Guest) => {
+    setAllocation((prev) => {
+      const newAllocation = prev.toSpliced(index, 1, {
+        ...newGuest,
+        price: prev[index].price,
+      });
+      onChange?.(newAllocation);
+      return newAllocation;
     });
-    setAllocation(newAllocation);
-    onChange?.(newAllocation);
   };
 
   return (

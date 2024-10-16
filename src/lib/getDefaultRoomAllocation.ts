@@ -5,6 +5,12 @@ interface RoomCost {
   allocation: RoomAllocation[];
 }
 
+const initialRoomAllocation: RoomAllocation = {
+  adult: 0,
+  child: 0,
+  price: 0,
+};
+
 export const getDefaultRoomAllocation = (
   guest: Guest,
   rooms: Room[]
@@ -16,9 +22,16 @@ export const getDefaultRoomAllocation = (
     child: number,
     roomIdx: number
   ): RoomCost => {
-    if (adult === 0 && child === 0) return { cost: 0, allocation: [] };
+    if (adult === 0 && child === 0) {
+      return {
+        cost: 0,
+        allocation: [],
+      };
+    }
 
-    if (roomIdx >= rooms.length) return { cost: Infinity, allocation: [] };
+    if (roomIdx >= rooms.length) {
+      return { cost: Infinity, allocation: [] };
+    }
 
     const key = `${adult}-${child}-${roomIdx}`;
     if (record[key] !== undefined) return record[key];
@@ -26,12 +39,16 @@ export const getDefaultRoomAllocation = (
     const { capacity, roomPrice, adultPrice, childPrice } = rooms[roomIdx];
     let minCost: RoomCost = { cost: Infinity, allocation: [] };
 
-    /** Skip current room and allocate next room directly. */
+    /** Condition1: Skip current room and allocate next room directly. */
     const nextRoomCost = getMinCost(adult, child, roomIdx + 1);
     if (nextRoomCost.cost !== Infinity) {
-      minCost = structuredClone(nextRoomCost);
+      minCost = {
+        cost: nextRoomCost.cost,
+        allocation: [initialRoomAllocation].concat(nextRoomCost.allocation),
+      };
     }
 
+    /** Condition2: Iterate all the allocation of each room. */
     for (let a = 1; a <= Math.min(adult, capacity); a += 1) {
       for (let c = 0; c <= Math.min(child, capacity - a); c += 1) {
         /** If the room has children, there must be at least one adult in the room. */
@@ -61,7 +78,14 @@ export const getDefaultRoomAllocation = (
 
   const { adult, child } = guest;
   const minCost = getMinCost(adult, child, 0);
-  const defaultRooms = minCost.cost === Infinity ? [] : minCost.allocation;
+
+  if (minCost.cost === Infinity) return [];
+
+  const remainingEmptyRooms = Array.from(
+    { length: rooms.length - minCost.allocation.length },
+    () => initialRoomAllocation
+  );
+  const defaultRooms = minCost.allocation.concat(remainingEmptyRooms);
 
   return defaultRooms;
 };
