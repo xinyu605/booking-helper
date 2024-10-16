@@ -30,6 +30,7 @@ test('allocate rooms to get the lowest price', () => {
   ]);
 
   expect(allocation1).toEqual([
+    { adult: 0, child: 0, price: 0 },
     { adult: 2, child: 0, price: 1000 },
     { adult: 2, child: 2, price: 1500 },
   ]);
@@ -49,6 +50,7 @@ test('allocate rooms to get the lowest price', () => {
       child: 0,
       price: 4000,
     },
+    { adult: 0, child: 0, price: 0 },
   ]);
 });
 
